@@ -1,7 +1,4 @@
-
-DROP DATABASE dist;
-CREATE DATABASE dist;
-USE dist;
+USE heroku_7c6180973e97471;
 
 CREATE TABLE warehouse_staff
 (
