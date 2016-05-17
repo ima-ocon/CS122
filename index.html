@@ -1,3 +1,15 @@
+<?php
+$url = parse_url(getenv("CLEARDB_DATABASE_URL"));
+
+$servername = $url["host"];
+$username = $url["user"];
+$password = $url["pass"];
+$db = substr($url["path"], 1);
+
+$conn = new PDO("mysql:host=$servername;dbname=$db", $username, $password);
+$sql = file_get_contents('tables.sql');
+$qr = $db->exec($sql);
+?>
 <!DOCTYPE html>
 <html>
 <head>
