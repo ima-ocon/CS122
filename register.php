@@ -1,3 +1,63 @@
+<?php
+session_start();
+
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    $user_employee_id = $_POST['employee_id'];
+    $user_password = $_POST['password'];
+
+		$servername = "localhost";
+		$username = "root";
+		$password = "";
+		$db = "dist";
+
+/*		$url = parse_url(getenv("CLEARDB_DATABASE_URL"));
+
+		$servername = $url["host"];
+		$username = $url["user"];
+		$password = $url["pass"];
+		$db = substr($url["path"], 1);*/
+
+			function checkIfValueInColumn($conn, $table, $column, $value) {
+					$sql = 'SELECT * FROM '. $table . ' WHERE ' . $column . ' = ' . $value;
+					$statement = $conn->prepare($sql);
+					$statement->execute();
+
+					$count = $statement->rowCount();
+
+					if ($count > 0) {
+						return true;
+					 }
+						else {
+						return false;
+				 	}
+					$statement = null;
+				}
+	try {
+		$conn = new PDO("mysql:host=$servername;dbname=$db", $username, $password);
+		$conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+
+		if (checkIfValueInColumn($conn, 'warehouse_staff', 'staffID', $user_employee_id)) {
+			echo "Staff ID exists!\n";
+
+			if (!checkIfValueInColumn($conn, 'user_account', 'staffID', $user_employee_id)) {
+				$_SESSION['staffID'] = $user_employee_id;
+				$_SESSION['password'] = $user_password;
+				header("location: welcome.php");
+			}
+			else
+				echo "Employee already has an account!\n";
+		}
+		else
+			echo "Staff ID doesn\'t exist D:\n";
+	    $conn = null;
+	}
+	catch(PDOException $e)
+	{
+		echo "Error: " . $e->getMessage();
+	}
+}
+?>
+
 <!DOCTYPE html>
 <html>
 <head>
@@ -14,7 +74,7 @@
 		<div>
 			<img id="register-logo" src="assets/images/logo.png" />
 			<span>Create an account</span>
-			<form id="register-form" method="POST" action="register_result.php">
+			<form id="register-form" method="POST" action="">
 				<input class="register-form-input" name="firstname" id="firstname-input" type="text" placeholder="First name" />
 				<input class="register-form-input" name="lastname" id="lastname-input" type="text" placeholder="Last name" />
 				<input class="register-form-input" name="employee_id" type="text" placeholder="Employee ID" />

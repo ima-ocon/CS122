@@ -49,8 +49,6 @@ DROP TABLE return_content;
 CREATE TABLE user_account
 (
 	userID INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-	ulastname VARCHAR(255),
-	ufirstname VARCHAR(255),
 	staffID INT default '0',
 	upassword VARCHAR(255),
 	FOREIGN KEY (staffID) REFERENCES warehouse_staff(staffID)
@@ -134,8 +132,6 @@ CREATE TABLE item
 	CHECK
 	 ( types IN (SELECT typename FROM itemtypes))
 );
-
------------------------------
 
 CREATE TABLE delivery
 (

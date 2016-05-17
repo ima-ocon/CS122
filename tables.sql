@@ -1,4 +1,26 @@
-USE heroku_7c6180973e97471;
+DROP DATABASE dist;
+CREATE DATABASE dist;
+USE dist;
+
+DROP TABLE user_account;
+DROP TABLE warehouse_staff;
+DROP TABLE agent;
+DROP TABLE client;
+DROP TABLE supplier;
+DROP TABLE itemtypes;
+DROP TABLE item;
+DROP TABLE invoice;
+DROP TABLE delivery_content;
+DROP TABLE issuance_content;
+
+DROP TABLE discountrates;
+DROP TABLE delivery;
+DROP TABLE item_issuance;
+DROP TABLE invoice_content;
+DROP TABLE item_transfer;
+DROP TABLE item_return;
+DROP TABLE transfer_content;
+DROP TABLE return_content;
 
 CREATE TABLE warehouse_staff
 (
@@ -181,13 +203,8 @@ CREATE TABLE invoice_content
 	FOREIGN KEY (invoiceID) REFERENCES invoice(invoiceID)
 );
 
-
 INSERT INTO warehouse_staff (s_lastname, s_firstname, s_MI, s_address, s_contactno)
 VALUES
 ('Galace', 'Miguel', 'N.', 'Quezon City', '09171234567');
 
 INSERT INTO warehouse_staff (s_firstname) VALUES ('GUIGI!!!');
-
-INSERT INTO warehouse_staff (s_lastname, s_firstname, s_MI, s_address, s_contactno)
-VALUES
-('X', 'Y', 'Z', 'Timbuktu', '09171234567');
