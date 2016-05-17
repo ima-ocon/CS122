@@ -2,35 +2,6 @@
 DROP DATABASE dist;
 CREATE DATABASE dist;
 USE dist;
-DROP TABLE user_account;
-DROP TABLE warehouse_staff;
-DROP TABLE agent;
-DROP TABLE client;
-DROP TABLE supplier;
-DROP TABLE itemtypes;
-DROP TABLE item;
-DROP TABLE invoice;
-DROP TABLE delivery_content;
-DROP TABLE issuance_content;
-
-DROP TABLE discountrates;
-DROP TABLE delivery;
-DROP TABLE item_issuance;
-DROP TABLE invoice_content;
-DROP TABLE item_transfer;
-DROP TABLE item_return;
-DROP TABLE transfer_content;
-DROP TABLE return_content;
-
-CREATE TABLE user_account
-(
-	userID INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-	ulastname VARCHAR(255),
-	ufirstname VARCHAR(255),
-	staffID INT default '0',
-	upassword VARCHAR(255),
-	FOREIGN KEY (staffID) REFERENCES warehouse_staff(staffID)
-);
 
 CREATE TABLE warehouse_staff
 (
@@ -43,6 +14,14 @@ CREATE TABLE warehouse_staff
 );
 
 ALTER TABLE warehouse_staff AUTO_INCREMENT=10001;
+
+CREATE TABLE user_account
+(
+	userID INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+	staffID INT default '0',
+	upassword VARCHAR(255),
+	FOREIGN KEY (staffID) REFERENCES warehouse_staff(staffID)
+);
 
 CREATE TABLE supplier
 (
@@ -110,8 +89,6 @@ CREATE TABLE item
 	CHECK
 	 ( types IN (SELECT typename FROM itemtypes))
 );
-
------------------------------
 
 CREATE TABLE delivery
 (
@@ -206,3 +183,14 @@ CREATE TABLE invoice_content
 	FOREIGN KEY (itemno) REFERENCES item(itemno),
 	FOREIGN KEY (invoiceID) REFERENCES invoice(invoiceID)
 );
+
+
+INSERT INTO warehouse_staff (s_lastname, s_firstname, s_MI, s_address, s_contactno)
+VALUES
+('Galace', 'Miguel', 'N.', 'Quezon City', '09171234567');
+
+INSERT INTO warehouse_staff (s_firstname) VALUES ('GUIGI!!!');
+
+INSERT INTO warehouse_staff (s_lastname, s_firstname, s_MI, s_address, s_contactno)
+VALUES
+('X', 'Y', 'Z', 'Timbuktu', '09171234567');
