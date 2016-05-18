@@ -26,9 +26,9 @@ $conn = new PDO("mysql:host=$servername;dbname=$db", $username, $password);
 $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
 //$sql = file_get_contents('tables.sql');
-$statement = $conn->exec($sql);
+//$statement = $conn->exec($sql);
 
-exec_sql_from_file('tables.sql', $conn);
+//exec_sql_from_file('tables.sql', $conn);
 ?>
 <!DOCTYPE html>
 <html>

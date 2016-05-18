@@ -10,7 +10,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 	$password = "";
 	$db = "dist";*/
 
-  $url = parse_url(getenv("CLEARDB_DATABASE_URL"));
+ $url = parse_url(getenv("CLEARDB_DATABASE_URL"));
 
   $servername = $url["host"];
   $username = $url["user"];
