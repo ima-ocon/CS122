@@ -208,3 +208,8 @@ VALUES
 ('Galace', 'Miguel', 'N.', 'Quezon City', '09171234567');
 
 INSERT INTO warehouse_staff (s_firstname) VALUES ('GUIGI!!!');
+
+
+INSERT INTO warehouse_staff (s_lastname, s_firstname, s_MI, s_address, s_contactno)
+VALUES
+('a', 'a', 'a', 'a', '0');

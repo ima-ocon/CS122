@@ -42,7 +42,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 			if (!checkIfValueInColumn($conn, 'user_account', 'staffID', $user_employee_id)) {
 				$_SESSION['staffID'] = $user_employee_id;
 				$_SESSION['password'] = $user_password;
-				header("location: welcome.php");
+
+				makeNewAccount($conn, $user_employee_id, $user_password);
+
+				header("location: home.php");
 			}
 			else
 				echo "Employee already has an account!\n";
@@ -54,6 +57,23 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 	catch(PDOException $e)
 	{
 		echo "Error: " . $e->getMessage();
+	}
+
+	function makeNewAccount($conn, $user_employee_id, $user_password) {
+		$sql = "INSERT INTO user_account (staffID, upassword) VALUES
+		(:staffID, :upassword)";
+		$statement = $conn->prepare($sql);
+
+		$statement->execute(array(
+		"staffID" => $user_employee_id,
+		"upassword" => $user_password
+		));
+
+		$affected_rows = $statement->rowCount();
+		if ($affected_rows > 0)
+			return true;
+		else
+			return false;
 	}
 }
 ?>

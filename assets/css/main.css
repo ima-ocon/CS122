@@ -1,4 +1,16 @@
 @font-face {
+	font-family: "bariol_regularregular";
+	src: url("../fonts/bariol_regular-webfont.eot");
+	src: url("../fonts/bariol_regular-webfont.eot?#iefix") format("embedded-opentype"),
+		 url("../fonts/bariol_regular-webfont.woff2") format("woff2"),
+		 url("../fonts/bariol_regular-webfont.woff") format("woff"),
+		 url("../fonts/bariol_regular-webfont.ttf") format("truetype"),
+		 url("../fonts/bariol_regular-webfont.svg#bariol_regularregular") format("svg");
+	font-weight: normal;
+	font-style: normal;
+}
+
+@font-face {
 	font-family: "bariol_boldbold";
 	src: url("../fonts/bariol_bold-webfont.eot");
 	src: url("../fonts/bariol_bold-webfont.eot?#iefix") format("embedded-opentype"),
@@ -11,15 +23,22 @@
 }
 
 @font-face {
-	font-family: "bariol_regularregular";
-	src: url("../fonts/bariol_regular-webfont.eot");
-	src: url("../fonts/bariol_regular-webfont.eot?#iefix") format("embedded-opentype"),
-		 url("../fonts/bariol_regular-webfont.woff2") format("woff2"),
-		 url("../fonts/bariol_regular-webfont.woff") format("woff"),
-		 url("../fonts/bariol_regular-webfont.ttf") format("truetype"),
-		 url("../fonts/bariol_regular-webfont.svg#bariol_regularregular") format("svg");
-	font-weight: normal;
-	font-style: normal;
+	font-family: "bariolregular_italic";
+	src: url("../fonts/bariol_regular_italic-webfont.eot");
+	src: url("../fonts/bariol_regular_italic-webfont.eot?#iefix") format("embedded-opentype"),
+		 url("../fonts/bariol_regular_italic-webfont.woff2") format("woff2"),
+		 url("../fonts/bariol_regular_italic-webfont.woff") format("woff"),
+		 url("../fonts/bariol_regular_italic-webfont.ttf") format("truetype"),
+		 url("../fonts/bariol_regular_italic-webfont.svg#bariolregular_italic") format("svg");
+    font-weight: normal;
+    font-style: normal;
+
+}
+
+#database-link {
+	color: white;
+	font-family: "bariol_boldbold";
+	font-size: 24px;
 }
 
 body {
@@ -29,9 +48,10 @@ body {
 a {
 	text-decoration: none;
 	color: inherit;
+	cursor: pointer;
 }
 
-a:not(.btn):hover {
+a:not(.btn, .nav-link):hover {
 	text-decoration: underline;
 }
 
@@ -67,7 +87,7 @@ input:focus {
 
 .btn:hover, .btn:focus {
 	background: #DEAB2C;
-	transition: 0.25s background;
+	transition: background .25s;
 }
 
 /*
@@ -84,7 +104,7 @@ header {
 	background-size: cover;
 }
 
-nav {
+#claim-nav {
 	position: relative;
 	margin-bottom: 60px;
 }
@@ -99,11 +119,11 @@ nav {
 	-webkit-filter: brightness(1000%);
 }
 
-nav ul li {
+#claim-nav ul li {
 	display: inline-block;
 }
 
-nav ul li:nth-child(2) {
+#claim-nav ul li:nth-child(2) {
 	position: relative;
 	right: 20px;
 	float: right;
@@ -263,4 +283,426 @@ small {
 	width: 500px;
 	height: 50px;
 	border: none;
+}
+
+/*
+ ==================================================
+ HOME
+
+*/
+
+#home-nav {
+	width: 25%;
+	height: calc(100vh - 50px);
+	padding-top: 50px;
+	background: #58595B;
+	color: #FFF;
+	float: left;
+	font: 15pt "bariol_regularregular";
+}
+
+#home-logo {
+	width: 128px;
+	height: 40px;
+	display: block;
+	margin-bottom: 50px;
+	background: url("../images/logo.png") no-repeat;
+	background-size: auto 40px;
+	-webkit-filter: brightness(1000%);
+}
+
+#user-div {
+	margin-bottom: 20px;
+}
+
+#user-dp {
+	display: inline-block;
+	width: 50px;
+	height: 50px;
+	border-radius: 50%;
+	margin-right: 10px;
+	background: url("../images/user-dp.jpg");
+	background-size: cover;
+	vertical-align: middle;
+}
+
+#user-div-text {
+	display: inline-block;
+	vertical-align: middle;
+}
+
+#user-name {
+	display: block;
+	font: 12pt "bariol_boldbold";
+	text-transform: uppercase;
+	letter-spacing: 1pt;
+	line-height: 12pt;
+}
+
+#user-id {
+	display: block;
+	font: 9pt "bariolregular_italic";
+}
+
+#home-nav > ul > li {
+	position: relative;
+	left: 50px;
+	width: calc(100% - 50px);
+}
+
+#nav-dashboard {
+	text-indent: 0;
+}
+
+#home-nav-marker {
+	position: absolute;
+	top: 0;
+	left: -7px;
+	bottom: 0;
+	width: 7px;
+	height: 75%;
+	margin: auto;
+	background: #EBB220;
+	animation: slide-in .5s forwards;
+}
+
+@keyframes slide-in {
+	100% {
+		left: 0;
+	}
+}
+
+.home-nav-heading {
+	display: block;
+	margin: 20px 0 5px;
+	font: 12pt "bariol_boldbold";
+	text-transform: uppercase;
+	letter-spacing: 3pt;
+}
+
+.nav-link {
+	position: relative;
+	left: -50px;
+	display: inline-block;
+	width: calc(100% - 50px);
+	padding: 0 50px;
+	text-indent: 15pt;
+	line-height: 28pt;
+}
+
+.nav-link:hover {
+	background: rgba(0, 0, 0, .25);
+}
+
+#home-content {
+	position: relative;
+	width: 75%;
+	float: right;
+	font-size: 0;
+	overflow: hidden;
+}
+
+#focused-card {
+	position: absolute;
+	top: 50%;
+	left: 0;
+	right: 0;
+	z-index: 1;
+	margin: auto;
+	width: 800px;
+	height: 450px;
+	border-radius: 2px;
+	background: #FFF;
+	box-shadow: 0 0 20px rgba(0, 0, 0, .25);
+	transform: translateY(100vh);
+	transition: transform .5s;
+}
+
+#focused-card.active {
+	transform: translateY(-50%);
+}
+
+.home-section {
+	display: none;
+	width: calc(100% - 200px);
+	height: calc(100vh - 200px);
+	padding: 100px;
+	color: #58595B;
+	overflow-y: scroll;
+	background: #EAEAEA;
+	transition: -webkit-filter .75s;
+}
+
+.home-section.inactive {
+	-webkit-filter: brightness(75%);
+}
+
+.dashboard-section {
+	display: block;
+}
+
+.section-heading {
+	display: block;
+	margin-bottom: 10px;
+	font: 15pt "bariolregular_italic";
+}
+
+#overview-marker {
+	display: inline-block;
+	width: 20px;
+	height: 50pt;
+	margin-right: 20px;
+	background: #EBB220;
+	vertical-align: top;
+}
+
+#overview-text {
+	display: inline-block;
+	margin-bottom: 40px;
+}
+
+#overview-inventory {
+	margin-bottom: 10px;
+}
+
+#inventory-total {
+	display: block;
+	font: 67pt "bariol_regularregular";
+	line-height: 50pt;
+	margin-bottom: 7px;
+}
+
+#inventory-heading {
+	font: 21pt "bariol_boldbold";
+	text-transform: uppercase;
+	letter-spacing: 2pt;
+}
+
+.overview-small {
+	display: inline-block;
+	margin-right: 30px;
+}
+
+.overview-small-total {
+	display: block;
+	margin-bottom: -5px;
+	font: 37pt "bariol_regularregular";
+}
+
+.section-small-heading {
+	font: 12pt "bariol_boldbold";
+	text-transform: uppercase;
+	letter-spacing: 2pt;
+}
+
+.feed-card {
+	display: inline-block;
+	background: #FFF;
+	padding: 30px;
+	margin: 0 10px 10px 0;
+	border-radius: 2px;
+	box-shadow: 0 0 5px rgba(0, 0, 0, .25);
+	vertical-align: top;
+	transition: box-shadow .25s;
+	cursor: pointer;
+}
+
+.feed-card.hoverable:hover {
+	box-shadow: 0 0 20px rgba(0, 0, 0, .25);
+}
+
+.dashboard-feed .feed-card {
+	width: 400px;
+}
+
+.feed-card-title {
+	font: 15pt "bariol_boldbold";
+	text-transform: uppercase;
+	letter-spacing: 2pt;
+}
+
+.feed-card-date {
+	float: right;
+	font: 9pt "bariol_regularregular";
+}
+
+.feed-card-id {
+	display: block;
+	font: 9pt "bariolregular_italic";
+	margin-bottom: 15px;
+}
+
+.feed-card-info {
+	display: block;
+	font: 12pt "bariol_regularregular";
+}
+
+.transfer-from-name {
+	display: inline-block;
+	text-indent: 12pt;
+}
+
+.transfer-from-batch {
+	display: inline-block;
+	text-indent: 41pt;
+}
+
+.transfer-to-name {
+	display: inline-block;
+	text-indent: 25pt;
+}
+
+.transfer-to-batch {
+	display: inline-block;
+	text-indent: 41pt;
+}
+
+.feedlist-marker {
+	width: 20px;
+	height: 50px;
+	display: inline-block;
+	margin-right: 20px;
+	background: #EBB220;
+	vertical-align: top;
+}
+
+.feedlist-heading {
+	display: inline-block;
+	margin-bottom: 30px;
+}
+
+.feedlist-title {
+	font: 50pt "bariol_regularregular";
+	line-height: 37pt;
+	margin-bottom: 7px;
+}
+
+.feedlist .feed-card {
+	width: calc(100% - 60px);
+}
+
+.feedlist .feed-card-id {
+	display: inline;
+	font: 21pt "bariol_boldbold";
+}
+
+.feedlist .feed-card-info {
+	margin-top: 15px;
+}
+
+.fab {
+	border-radius: 50%;
+	box-shadow: 0 2px 8px rgba(0, 0, 0, .25);
+	cursor: pointer;
+	transition: box-shadow .25s;
+}
+
+#main-fab {
+	position: absolute;
+	right: 80px;
+	bottom: 25px;
+	width: 56px;
+	height: 56px;
+	background: #EBB220;
+	transform: scale(0);
+	transition: transform .25s;
+}
+
+#main-fab.visible {
+	transform: scale(1);
+}
+
+.fab.hoverable:hover {
+	box-shadow: 0 6px 10px rgba(0, 0, 0, .25);
+}
+
+.add-icon {
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	margin: auto;
+	transition: transform .5s;
+}
+
+.add-icon.rotate {
+	transform: rotate(135deg);
+}
+
+.add-icon div:first-child {
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	width: 2px;
+	height: 14px;
+	margin: auto;
+	background: #FFF;
+}
+
+.add-icon div:last-child {
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	width: 14px;
+	height: 2px;
+	margin: auto;
+	background: #FFF;
+}
+
+.sub-fab {
+	position: absolute;
+	left: 0;
+	right: 0;
+	width: 32px;
+	height: 32px;
+	margin: auto;
+	background: #FFF;
+	opacity: 0;
+	visibility: hidden;
+	transition: width .25s,
+				height .25s,
+				box-shadow .25s,
+				opacity .25s,
+				transform .25s;
+}
+
+.sub-fab.active {
+	width: 42px;
+	height: 42px;
+	visibility: visible;
+	opacity: 1;
+}
+
+#add-fab {
+	transform: translateY(-95px);
+	transition-delay: .05s;
+}
+
+#add-fab.active {
+	transform: translateY(-116px);
+}
+
+#search-fab {
+	text-align: center;
+	transform: translateY(-41px);
+}
+
+.material-icons {
+	color: #58595B;
+	font-size: 18px;
+	line-height: 42px;
+}
+
+#search-fab.active {
+	transform: translateY(-62px);
+}
+
+#add-fab .add-icon div {
+	background: #58595B;
+	transform: scale(.75);
 }

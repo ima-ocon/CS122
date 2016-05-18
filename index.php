@@ -1,12 +1,12 @@
 <?php
-/*$url = parse_url(getenv("CLEARDB_DATABASE_URL"));
+//$url = parse_url(getenv("CLEARDB_DATABASE_URL"));
 
-$servername = $url["host"];
+/*$servername = $url["host"];
 $username = $url["user"];
 $password = $url["pass"];
 $db = substr($url["path"], 1);*/
 
-function exec_sql_from_file($path, PDO $pdo) {
+/*function exec_sql_from_file($path, PDO $pdo) {
     if (! preg_match_all("/('(\\\\.|.)*?'|[^;])+/s", file_get_contents($path), $m))
         return;
 
@@ -24,7 +24,7 @@ $servername = "localhost";
 $conn = new PDO("mysql:host=$servername;dbname=$db", $username, $password);
 $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
-//exec_sql_from_file('tables.sql', $conn);
+exec_sql_from_file('tables.sql', $conn)*/
 ?>
 <!DOCTYPE html>
 <html>
@@ -38,12 +38,12 @@ $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 </head>
 
 <body>
-	<h1><a href="database_viewer.php">VIEW ALL DATABASES</a></h1>
 	<header>
-		<nav>
+		<nav id="claim-nav">
+			<p><a id="database-link" href="database_viewer.php">{View database}</a></p>
 			<ul>
 				<li><img id="claim-logo" src="assets/images/logo.png" /></li>
-				<li><a id="login-link" href="login.html">Log in</a></li>
+				<li><a id="login-link" href="login.php">Log in</a></li>
 			</ul>
 		</nav>
 		<h1>Track product inventory and sales.</h1>
