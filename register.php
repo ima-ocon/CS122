@@ -32,6 +32,24 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 				 	}
 					$statement = null;
 				}
+
+
+        	function makeNewAccount($conn, $user_employee_id, $user_password) {
+        		$sql = "INSERT INTO user_account (staffID, upassword) VALUES
+        		(:staffID, :upassword)";
+        		$statement = $conn->prepare($sql);
+
+        		$statement->execute(array(
+        		"staffID" => $user_employee_id,
+        		"upassword" => $user_password
+        		));
+
+        		$affected_rows = $statement->rowCount();
+        		if ($affected_rows > 0)
+        			return true;
+        		else
+        			return false;
+        	}
 	try {
 		$conn = new PDO("mysql:host=$servername;dbname=$db", $username, $password);
 		$conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
@@ -58,23 +76,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 	{
 		echo "Error: " . $e->getMessage();
 	}
-
-	function makeNewAccount($conn, $user_employee_id, $user_password) {
-		$sql = "INSERT INTO user_account (staffID, upassword) VALUES
-		(:staffID, :upassword)";
-		$statement = $conn->prepare($sql);
-
-		$statement->execute(array(
-		"staffID" => $user_employee_id,
-		"upassword" => $user_password
-		));
-
-		$affected_rows = $statement->rowCount();
-		if ($affected_rows > 0)
-			return true;
-		else
-			return false;
-	}
 }
 ?>
 
@@ -95,8 +96,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 			<img id="register-logo" src="assets/images/logo.png" />
 			<span>Create an account</span>
 			<form id="register-form" method="POST" action="">
-				<input class="register-form-input" name="firstname" id="firstname-input" type="text" placeholder="First name" />
-				<input class="register-form-input" name="lastname" id="lastname-input" type="text" placeholder="Last name" />
 				<input class="register-form-input" name="employee_id" type="text" placeholder="Employee ID" />
 				<input class="register-form-input" name="password" type="password" placeholder="Password" />
 				<input class="btn register-form-input" id="signup-submit" type="submit" value="Sign up" />

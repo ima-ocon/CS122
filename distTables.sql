@@ -26,7 +26,6 @@ return_content(/-rbatchID-,-itemno-/,return_quantity)
 DROP DATABASE dist;
 CREATE DATABASE dist;
 USE dist;
-DROP TABLE user_account;
 DROP TABLE warehouse_staff;
 DROP TABLE agent;
 DROP TABLE client;
@@ -45,14 +44,6 @@ DROP TABLE item_transfer;
 DROP TABLE item_return;
 DROP TABLE transfer_content;
 DROP TABLE return_content;
-
-CREATE TABLE user_account
-(
-	userID INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-	staffID INT default '0',
-	upassword VARCHAR(255),
-	FOREIGN KEY (staffID) REFERENCES warehouse_staff(staffID)
-);
 
 CREATE TABLE warehouse_staff
 (
@@ -74,21 +65,10 @@ CREATE TABLE supplier
 
 ALTER TABLE supplier AUTO_INCREMENT=101;
 
-CREATE TABLE discountrates
-(
-	discountID INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-	timep_dr FLOAT (2) default '0',
-	digicam_dr FLOAT (2) default '0',
-	phones_dr FLOAT (2) default '0',
-	appliances_dr FLOAT (2) default '0'
-);
-
 CREATE TABLE client
 (
 	clientno INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-	c_name VARCHAR(255),
-	discountID INT NOT NULL,
-	FOREIGN KEY (discountID) REFERENCES discountrates(discountID)
+	c_name VARCHAR(255)
 );
 
 ALTER TABLE client AUTO_INCREMENT = 501;
@@ -119,7 +99,8 @@ ALTER TABLE invoice AUTO_INCREMENT=80001;
 
 CREATE TABLE itemtypes
 (
-	typename VARCHAR(255) NOT NULL PRIMARY KEY
+	Type_ID INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+	typename VARCHAR(255) NOT NULL
 );
 
 CREATE TABLE item
@@ -128,10 +109,21 @@ CREATE TABLE item
 	itemname VARCHAR(255),
 	price INT NOT NULL default '5',
 	srp INT NOT NULL default '10',
-	types VARCHAR(255) NOT NULL,
-	CHECK
-	 ( types IN (SELECT typename FROM itemtypes))
+	type INT NOT NULL,
+	FOREIGN KEY (type) REFERENCES itemtypes(Type_ID)
 );
+
+CREATE TABLE discountrates
+(
+	Client_ID INT NOT NULL,
+	Type_ID INT NOT NULL,
+	PRIMARY KEY(Client_ID,Type_ID),
+	Discount FLOAT(2),
+	FOREIGN KEY (Client_ID) REFERENCES client(clientno),
+	FOREIGN KEY (Type_ID) REFERENCES itemtypes(Type_ID)
+);
+
+-----------------------------
 
 CREATE TABLE delivery
 (
@@ -227,6 +219,13 @@ CREATE TABLE invoice_content
 	FOREIGN KEY (invoiceID) REFERENCES invoice(invoiceID)
 );
 
+CREATE TABLE user_account
+(
+	userID INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+	staffID INT default '0',
+	upassword VARCHAR(255),
+	FOREIGN KEY (staffID) REFERENCES warehouse_staff(staffID)
+);
 
 
 INSERT INTO warehouse_staff (s_lastname, s_firstname, s_MI, s_address, s_contactno)
@@ -240,27 +239,36 @@ VALUES
 ('Namae'),
 ('Ming Tze');
 
-INSERT INTO discountrates(timep_dr,digicam_dr,phones_dr,appliances_dr)
+INSERT INTO itemtypes (typename)
 VALUES
-(default,default,'0.5','0.2'),
-('0.9','0.1','0.3','0.4');
+('Time Pieces'),
+('Digital Cameras and Accessories'),
+('Mobile Phones'),
+('Small Appliances');
 
-INSERT INTO client (c_name,discountID)
+INSERT INTO client (c_name)
 VALUES
-('Flowey',1),
-('Jormangund',2);
+('Flowey'),
+('Jormangund');
+
+INSERT INTO discountrates(Client_ID, Type_ID, Discount)
+VALUES
+(501,3,'0.5'),
+(501,4,'0.2'),
+(502,1,'0.9'),
+(502,2,'0.1');
 
 INSERT INTO agent(alastname,afirstname,aMI,aaddress,acontactno,clientno)
 VALUES
 ('Adajar','Amara','E.','Muntinlupa City','09177654321',501),
 ('Lacson','Jose Teodoro','<3','Scrub Nation','09369991111',502);
 
-INSERT INTO item (itemname,types)
+INSERT INTO item (itemname,type)
 VALUES
-('Beryl Gem','Time Pieces'),
-('8 Slot Jute Bag','Digital Cameras and Accessories'),
-('Iron Ore','Mobile Phones'),
-('Seasoned Wood Log','Small Appliances');
+('Beryl Gem',1),
+('8 Slot Jute Bag',2),
+('Iron Ore',3),
+('Seasoned Wood Log',4);
 
 INSERT INTO invoice(invoice_date,agentno)
 VALUES

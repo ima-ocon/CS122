@@ -48,7 +48,12 @@ session_start();
 					<a href="login.html">
 						<div id="user-dp"></div>
 						<div id="user-div-text">
-							<span id="user-name">Miguel Galace</span>
+							<span id="user-name"><?php
+							$sql = 'SELECT CONCAT(s_firstname, \' \', s_lastname) AS name FROM warehouse_staff WHERE staffID = ' . $user_employee_id;
+							$statement = $conn->prepare($sql);
+							$statement->execute();
+							$row = $statement->fetch(PDO::FETCH_ASSOC);
+							echo $row['name']?></span>
 							<span id="user-id"><?php echo $_SESSION['staffID'] ?></span>
 						</div>
 					</a>
@@ -102,11 +107,18 @@ session_start();
 				<div id="overview-marker"></div>
 				<div id="overview-text">
 					<div id="overview-inventory">
-						<div id="inventory-total">67 items</div>
+						<div id="inventory-total">111 items</div>
 						<div id="inventory-heading">Inventory</div>
 					</div>
 					<div class="overview-small">
-						<div class="overview-small-total">111 sales</div>
+						<div class="overview-small-total">
+							<?php
+							$sql = 'SELECT count(*) FROM invoice';
+							$statement = $conn->prepare($sql);
+							$statement->execute();
+							$numInvoices = $statement->fetchColumn();
+
+							echo $numInvoices ?> sales</div>
 						<div class="section-small-heading">Transactions</div>
 					</div>
 					<div class="overview-small">
@@ -117,59 +129,139 @@ session_start();
 			</div>
 			<div class="dashboard-feed">
 				<span class="section-heading">Recent</span>
-				<div class="feed-card hoverable">
-					<span class="feed-card-title">Item Return Form</span>
-					<span class="feed-card-date">20/12/12</span>
-					<span class="feed-card-id">#2385937396</span>
-					<span class="feed-card-info">
-						Batch: 201212150012<br />
-						Agent: Pride, Brenda Kimberly<br />
-						Client: ABS-CBN<br />
-					</span>
-				</div>
-				<div class="feed-card hoverable">
-					<span class="feed-card-title">Sales Invoice</span>
-					<span class="feed-card-date">17/12/12</span>
-					<span class="feed-card-id">#98806</span>
-					<span class="feed-card-info">
-						Agent: Pride, Brenda Kimberly<br />
-						Client: ABS-CBN<br />
-						Total: P18,700.00
-					</span>
-				</div>
-				<div class="feed-card hoverable">
-					<span class="feed-card-title">Item Issuance Form</span>
-					<span class="feed-card-date">15/12/12</span>
-					<span class="feed-card-id">#6285046255</span>
-					<span class="feed-card-info">
-						Batch: 201212150012<br />
-						Agent: Pride, Brenda Kimberly<br />
-						Client: ABS-CBN<br />
-						Issuer: Smith, Joana
-					</span>
-				</div>
-				<div class="feed-card hoverable">
-					<span class="feed-card-title">Item Transfer Form</span>
-					<span class="feed-card-date">15/12/12</span>
-					<span class="feed-card-id">#5395726206</span>
-					<span class="feed-card-info">
-						From: <span class="transfer-from-name">Pride, Brenda Kimberly</span><br />
-						<span class="transfer-from-batch">201212150012</span><br />
-						To: <span class="transfer-to-name">Worth, Lydia</span><br />
-						<span class="transfer-to-batch">201212150033</span>
-					</span>
-				</div>
-				<div class="feed-card hoverable">
-					<span class="feed-card-title">Delivery Receipt</span>
-					<span class="feed-card-date">13/12/12</span>
-					<span class="feed-card-id">#3658365721</span>
-					<span class="feed-card-info">
-						Delivery: 201212130100<br />
-						Time: 9:00 AM<br />
-						Receiver: Hedge, Jerry<br />
-						Supplier: Columbia
-					</span>
-				</div>
+				<?php
+				$sql = 'SELECT * FROM (SELECT dbatchID AS batchID, ddate AS date, "delivery" AS type FROM delivery
+				UNION ALL
+				SELECT ibatchID AS batchID, i_date AS date, "item_issuance" AS type FROM item_issuance
+				UNION ALL
+				SELECT itbatchID AS batchID, itdate AS date, "item_transfer" AS type FROM item_transfer
+				UNION ALL
+				SELECT rbatchID AS batchID, r_date AS date, "item_return" AS type FROM item_return
+				UNION ALL
+				SELECT invoiceID AS batchID, invoice_date AS date, "invoice" AS type FROM invoice) AS reports
+				ORDER BY YEAR(date) DESC, MONTH(date) DESC, DAY(date) DESC;';
+        $statement = $conn->prepare($sql);
+        $statement->execute();
+
+								while( $row = $statement->fetch(PDO::FETCH_ASSOC) ) {?>
+									<div class="feed-card hoverable">
+
+									<?php $reportType = $row['type'];
+									$reportID = $row['batchID'];
+
+									if (strcmp($reportType, "delivery") == 0){
+
+										$sqlTable = 'SELECT delivery.dbatchID AS dbatchID, delivery.ddate AS ddate,
+											delivery.dtime AS dtime, CONCAT(warehouse_staff.s_lastname, \', \', warehouse_staff.s_firstname) AS receiver,
+											supplier.s_name AS supplier FROM delivery, warehouse_staff, supplier
+												WHERE delivery.dbatchID = ' . $reportID . ' AND delivery.staffID = warehouse_staff.staffID AND delivery.supplierno = supplier.supplierno
+												ORDER BY YEAR(delivery.ddate) DESC, MONTH(delivery.ddate) DESC, DAY(delivery.ddate) DESC';
+
+										$statementTable = $conn->prepare($sqlTable);
+										$statementTable->execute();
+
+										$rowTable = $statementTable->fetch(PDO::FETCH_ASSOC);
+										?>
+
+										<span class="feed-card-title">Delivery Receipt</span>
+										<span class="feed-card-date"><?php echo $rowTable['ddate']?></span>
+										<span class="feed-card-id"><?php echo '#' . $rowTable['dbatchID']?></span>
+										<span class="feed-card-info">
+											Delivery: <?php echo $rowTable['ddate'] . $rowTable['dtime']?> <br />
+											Time: <?php echo $rowTable['dtime']?><br />
+											Receiver: <?php echo $rowTable['receiver']?><br />
+											Supplier: <?php echo $rowTable['supplier']?>
+										</span>
+									<?php } elseif (strcmp($reportType, "item_issuance") == 0){
+										$sqlTable ='SELECT item_issuance.ibatchID AS ibatchID, item_issuance.i_date AS i_date,
+											item_issuance.i_time AS i_time, CONCAT(agent.alastname, \', \', agent.afirstname) AS agent,
+											CONCAT(warehouse_staff.s_lastname, \', \', warehouse_staff.s_firstname) AS issuer,
+											client.c_name AS client
+											 FROM item_issuance, agent, warehouse_staff, client
+											 WHERE item_issuance.ibatchID = ' . $reportID . ' AND item_issuance.agentno = agent.agentno AND item_issuance.staffID = warehouse_staff.staffID
+											 AND agent.clientno = client.clientno
+											 ORDER BY YEAR(item_issuance.i_date) DESC, MONTH(item_issuance.i_date) DESC, DAY(item_issuance.i_date) DESC';
+
+										$statementTable = $conn->prepare($sqlTable);
+										$statementTable->execute();
+
+										$rowTable = $statementTable->fetch(PDO::FETCH_ASSOC);
+										?>
+
+										<span class="feed-card-title">Item Issuance Form</span>
+										<span class="feed-card-date"><?php echo $rowTable['i_date']?></span>
+										<span class="feed-card-id">#<?php echo $rowTable['ibatchID']?></span>
+										<span class="feed-card-info">
+											Batch: <?php echo $rowTable['ibatchID'] . $rowTable['i_date']?> <br />
+											Agent: <?php echo $rowTable['agent']?><br />
+											Client: <?php echo $rowTable['client']?><br />
+											Issuer: <?php echo $rowTable['issuer']?>
+										</span>
+									<?php } elseif (strcmp($reportType, "item_transfer") == 0){
+										$sqlTable = 'SELECT item_transfer.itbatchID AS itbatchID, item_transfer.itdate AS itdate, item_transfer.frombatchID AS frombatchID,
+											item_transfer.tobatchID, CONCAT(a.alastname, \', \', a.afirstname) AS sender, CONCAT(b.alastname, \', \', b.afirstname) AS receiver
+											FROM item_transfer, item_issuance AS send_item_issuance, item_issuance AS receive_item_issuance, agent AS a, agent AS b
+											WHERE item_transfer.itbatchID = ' . $reportID . ' AND item_transfer.frombatchID = send_item_issuance.ibatchID AND send_item_issuance.agentno = a.agentno AND
+											item_transfer.tobatchID = receive_item_issuance.ibatchID AND receive_item_issuance.agentno = b.agentno
+											ORDER BY YEAR(item_transfer.itdate) DESC, MONTH(item_transfer.itdate) DESC, DAY(item_transfer.itdate) DESC';
+										$statementTable = $conn->prepare($sqlTable);
+										$statementTable->execute();
+
+										$rowTable = $statementTable->fetch(PDO::FETCH_ASSOC);
+										?>
+
+										<span class="feed-card-title">Item Transfer Form</span>
+										<span class="feed-card-date"><?php echo $rowTable['itdate']?></span>
+										<span class="feed-card-id">#<?php echo $rowTable['itbatchID']?></span>
+										<span class="feed-card-info">
+											From: <span class="transfer-from-name"><?php echo $rowTable['sender']?></span><br />
+											<span class="transfer-from-batch"><?php echo $rowTable['frombatchID']?></span><br />
+											To: <span class="transfer-to-name"><?php echo $rowTable['receiver']?></span><br />
+											<span class="transfer-to-batch"><?php echo $rowTable['tobatchID']?></span>
+										</span>
+									<?php } elseif (strcmp($reportType, "item_return") == 0){
+										$sqlTable = 'SELECT item_return.rbatchID AS rbatchID, item_return.r_date AS r_date, item_return.ibatchID AS ibatchID,
+										CONCAT(agent.alastname, \', \', agent.afirstname) AS agent, client.c_name AS client
+										FROM item_return, agent, client, item_issuance
+										WHERE item_return.rbatchID = ' . $reportID . ' AND item_return.ibatchID = item_issuance.ibatchID AND
+										item_issuance.agentno = agent.agentno AND agent.clientno = client.clientno
+										ORDER BY YEAR(item_return.r_date) DESC, MONTH(item_return.r_date) DESC, DAY(item_return.r_date) DESC';
+										$statementTable = $conn->prepare($sqlTable);
+										$statementTable->execute();
+
+										$rowTable = $statementTable->fetch(PDO::FETCH_ASSOC);
+										?>
+
+										<span class="feed-card-title">ITEM RETURN FORM</span>
+										<span class="feed-card-date"><?php echo $rowTable['r_date']?></span>
+										<span class="feed-card-id">#<?php echo $rowTable['rbatchID']?></span>
+										<span class="feed-card-info">
+											Batch: <?php echo $rowTable['ibatchID']?><br />
+											Agent: <?php echo $rowTable['agent']?><br />
+											Client: <?php echo $rowTable['client']?><br />
+										</span>
+									<?php } elseif (strcmp($reportType, "invoice") == 0){
+										$sqlTable = 'SELECT invoice.invoiceID AS invoiceID, invoice.invoice_date AS invoice_date,
+										CONCAT(agent.alastname, \', \', agent.afirstname) AS agent, client.c_name AS client
+										FROM invoice, agent, client WHERE invoice.invoiceID = ' . $reportID . ' AND invoice.agentno = agent.agentno AND agent.clientno = client.clientno;
+										ORDER BY YEAR(invoice.invoice_date) DESC, MONTH(invoice.invoice_date) DESC, DAY(invoice.invoice_date) DESC';
+										$statementTable = $conn->prepare($sqlTable);
+										$statementTable->execute();
+
+										$rowTable = $statementTable->fetch(PDO::FETCH_ASSOC);
+										?>
+
+										<span class="feed-card-title">SALES INVOICE</span>
+										<span class="feed-card-date"><?php echo $rowTable['invoice_date']?></span>
+										<span class="feed-card-id">#<?php echo $rowTable['invoiceID']?></span>
+										<span class="feed-card-info">
+											Agent: <?php echo $rowTable['agent']?><br />
+											Client: <?php echo $rowTable['client']?><br />
+											Total: P18,700.00
+										</span>
+									<?php } ?>
+									</div>
+								<?php }?>
 			</div>
 		</section>
 
@@ -181,11 +273,11 @@ session_start();
 			</div>
 			<div class="feedlist">
 				<?php
-				echo $user_employee_id;
 				$sql = 'SELECT delivery.dbatchID AS dbatchID, delivery.ddate AS ddate,
 					delivery.dtime AS dtime, CONCAT(warehouse_staff.s_lastname, \', \', warehouse_staff.s_firstname) AS receiver,
 					supplier.s_name AS supplier FROM delivery, warehouse_staff, supplier
-						WHERE delivery.staffID = warehouse_staff.staffID AND delivery.supplierno = supplier.supplierno ORDER BY YEAR(delivery.ddate) DESC, MONTH(delivery.ddate) DESC, DAY(delivery.ddate) DESC';
+						WHERE delivery.staffID = warehouse_staff.staffID AND delivery.supplierno = supplier.supplierno
+						ORDER BY YEAR(delivery.ddate) DESC, MONTH(delivery.ddate) DESC, DAY(delivery.ddate) DESC';
         $statement = $conn->prepare($sql);
         $statement->execute();
 
@@ -251,24 +343,16 @@ session_start();
 				item_transfer.tobatchID, CONCAT(a.alastname, \', \', a.afirstname) AS sender, CONCAT(b.alastname, \', \', b.afirstname) AS receiver
 				FROM item_transfer, item_issuance AS send_item_issuance, item_issuance AS receive_item_issuance, agent AS a, agent AS b
 				WHERE item_transfer.frombatchID = send_item_issuance.ibatchID AND send_item_issuance.agentno = a.agentno AND
-				item_transfer.tobatchID = receive_item_issuance.ibatchID AND receive_item_issuance.agentno = b.agentno';
-				 /*
-				 WHERE item_issuance.agentno = agent.agentno AND item_issuance.staffID = warehouse_staff.staffID
-				 AND agent.clientno = client.clientno
-				 ORDER BY YEAR(item_issuance.i_date) DESC, MONTH(item_issuance.i_date) DESC, DAY(item_issuance.i_date) DESC';
-
- 			  item_issuance.i_date AS i_date,
- 				item_issuance.i_time AS i_time, CONCAT(agent.alastname, \', \', agent.afirstname) AS agent,
- 				CONCAT(warehouse_staff.s_lastname, \', \', warehouse_staff.s_firstname) AS issuer,
- 				client.c_name AS client
-*/					$statement = $conn->prepare($sql);
+				item_transfer.tobatchID = receive_item_issuance.ibatchID AND receive_item_issuance.agentno = b.agentno
+				ORDER BY YEAR(item_transfer.itdate) DESC, MONTH(item_transfer.itdate) DESC, DAY(item_transfer.itdate) DESC';
+			$statement = $conn->prepare($sql);
 			$statement->execute();?>
 
 			<div class="feedlist">
 				<?php while( $row = $statement->fetch(PDO::FETCH_ASSOC) ) { ?>
 				<div class="feed-card hoverable">
 					<span class="feed-card-id">#<?php echo $row['itbatchID']?></span>
-					<span class="feed-card-date"><?php echo $row['itbatchID']?></span>
+					<span class="feed-card-date"><?php echo $row['itdate']?></span>
 					<span class="feed-card-info">
 						From: <span class="transfer-from-name"><?php echo $row['sender']?></span><br />
 						<span class="transfer-from-batch"><?php echo $row['frombatchID']?></span><br />
@@ -287,33 +371,32 @@ session_start();
 				<div class="section-small-heading">Inventory</div>
 			</div>
 			<div class="feedlist">
-				<div class="feed-card hoverable">
-					<span class="feed-card-id">#2385937396</span>
-					<span class="feed-card-date">20/12/12</span>
-					<span class="feed-card-info">
-						Batch: 201212150012<br />
-						Agent: Pride, Brenda Kimberly<br />
-						Client: ABS-CBN<br />
-					</span>
-				</div>
-				<div class="feed-card hoverable">
-					<span class="feed-card-id">#2385937396</span>
-					<span class="feed-card-date">20/12/12</span>
-					<span class="feed-card-info">
-						Batch: 201212150012<br />
-						Agent: Pride, Brenda Kimberly<br />
-						Client: ABS-CBN<br />
-					</span>
-				</div>
-				<div class="feed-card hoverable">
-					<span class="feed-card-id">#2385937396</span>
-					<span class="feed-card-date">20/12/12</span>
-					<span class="feed-card-info">
-						Batch: 201212150012<br />
-						Agent: Pride, Brenda Kimberly<br />
-						Client: ABS-CBN<br />
-					</span>
-				</div>
+				<?php
+				$sql = 'SELECT item_return.rbatchID AS rbatchID, item_return.r_date AS r_date, item_return.ibatchID AS ibatchID,
+				CONCAT(agent.alastname, \', \', agent.afirstname) AS agent, client.c_name AS client
+				FROM item_return, agent, client, item_issuance WHERE item_return.ibatchID = item_issuance.ibatchID AND
+				item_issuance.agentno = agent.agentno AND agent.clientno = client.clientno
+				ORDER BY YEAR(item_return.r_date) DESC, MONTH(item_return.r_date) DESC, DAY(item_return.r_date) DESC';
+				/*item_transfer.itbatchID AS itbatchID, item_transfer.itdate AS itdate, item_transfer.frombatchID AS frombatchID,
+					item_transfer.tobatchID, CONCAT(a.alastname, \', \', a.afirstname) AS sender, CONCAT(b.alastname, \', \', b.afirstname) AS receiver
+					FROM item_transfer, item_issuance AS send_item_issuance, item_issuance AS receive_item_issuance, agent AS a, agent AS b
+					WHERE item_transfer.frombatchID = send_item_issuance.ibatchID AND send_item_issuance.agentno = a.agentno AND
+					item_transfer.tobatchID = receive_item_issuance.ibatchID AND receive_item_issuance.agentno = b.agentno';
+*/				$statement = $conn->prepare($sql);
+				$statement->execute();?>
+
+				<div class="feedlist">
+					<?php while( $row = $statement->fetch(PDO::FETCH_ASSOC) ) { ?>
+						<div class="feed-card hoverable">
+							<span class="feed-card-id">#<?php echo $row['rbatchID']?></span>
+							<span class="feed-card-date"><?php echo $row['r_date']?></span>
+							<span class="feed-card-info">
+								Batch: <?php echo $row['ibatchID']?><br />
+								Agent: <?php echo $row['agent']?><br />
+								Client: <?php echo $row['client']?><br />
+							</span>
+						</div>
+					<?php }?>
 			</div>
 		</section>
 
@@ -323,34 +406,29 @@ session_start();
 				<div class="feedlist-title">Sales invoices</div>
 				<div class="section-small-heading">Transactions</div>
 			</div>
+			<?php
+			$sql = 'SELECT invoice.invoiceID AS invoiceID, invoice.invoice_date AS invoice_date,
+			CONCAT(agent.alastname, \', \', agent.afirstname) AS agent, client.c_name AS client
+			FROM invoice, agent, client WHERE invoice.agentno = agent.agentno AND agent.clientno = client.clientno;
+			ORDER BY YEAR(invoice.invoice_date) DESC, MONTH(invoice.invoice_date) DESC, DAY(invoice.invoice_date) DESC';
+			$statement = $conn->prepare($sql);
+			$statement->execute();
+
+			$sql = item.srp * client.discount
+			?>
+
 			<div class="feedlist">
+				<?php while( $row = $statement->fetch(PDO::FETCH_ASSOC) ) { ?>
 				<div class="feed-card hoverable">
-					<span class="feed-card-id">#98806</span>
-					<span class="feed-card-date">17/12/12</span>
+					<span class="feed-card-id">#<?php echo $row['invoiceID']?></span>
+					<span class="feed-card-date"><?php echo $row['invoice_date']?></span>
 					<span class="feed-card-info">
-						Agent: Pride, Brenda Kimberly<br />
-						Client: ABS-CBN<br />
+						Agent: <?php echo $row['agent']?><br />
+						Client: <?php echo $row['client']?><br />
 						Total: P18,700.00
 					</span>
 				</div>
-				<div class="feed-card hoverable">
-					<span class="feed-card-id">#98806</span>
-					<span class="feed-card-date">17/12/12</span>
-					<span class="feed-card-info">
-						Agent: Pride, Brenda Kimberly<br />
-						Client: ABS-CBN<br />
-						Total: P18,700.00
-					</span>
-				</div>
-				<div class="feed-card hoverable">
-					<span class="feed-card-id">#98806</span>
-					<span class="feed-card-date">17/12/12</span>
-					<span class="feed-card-info">
-						Agent: Pride, Brenda Kimberly<br />
-						Client: ABS-CBN<br />
-						Total: P18,700.00
-					</span>
-				</div>
+				<?php }?>
 			</div>
 		</section>
 	</div>

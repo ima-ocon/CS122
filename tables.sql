@@ -1,7 +1,6 @@
 DROP DATABASE dist;
 CREATE DATABASE dist;
 USE dist;
-
 DROP TABLE user_account;
 DROP TABLE warehouse_staff;
 DROP TABLE agent;
@@ -34,14 +33,6 @@ CREATE TABLE warehouse_staff
 
 ALTER TABLE warehouse_staff AUTO_INCREMENT=10001;
 
-CREATE TABLE user_account
-(
-	userID INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-	staffID INT default '0',
-	upassword VARCHAR(255),
-	FOREIGN KEY (staffID) REFERENCES warehouse_staff(staffID)
-);
-
 CREATE TABLE supplier
 (
 	supplierno INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
@@ -52,11 +43,12 @@ ALTER TABLE supplier AUTO_INCREMENT=101;
 
 CREATE TABLE discountrates
 (
-	discountID INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-	timep_dr FLOAT (2) default '0',
-	digicam_dr FLOAT (2) default '0',
-	phones_dr FLOAT (2) default '0',
-	appliances_dr FLOAT (2) default '0'
+	Client_ID INT NOT NULL,
+	Type_ID INT NOT NULL,
+	PRIMARY KEY(Client_ID,Type_ID),
+	Discount FLOAT(2),
+	FOREIGN KEY (Client_ID) REFERENCES client(clientno),
+	FOREIGN KEY (Type_ID) REFERENCES itemtypes(Type_ID)
 );
 
 CREATE TABLE client
@@ -95,8 +87,10 @@ ALTER TABLE invoice AUTO_INCREMENT=80001;
 
 CREATE TABLE itemtypes
 (
-	typename VARCHAR(255) NOT NULL PRIMARY KEY
+	Type_ID INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+	typename VARCHAR(255) NOT NULL
 );
+
 
 CREATE TABLE item
 (
@@ -104,9 +98,8 @@ CREATE TABLE item
 	itemname VARCHAR(255),
 	price INT NOT NULL default '5',
 	srp INT NOT NULL default '10',
-	types VARCHAR(255) NOT NULL,
-	CHECK
-	 ( types IN (SELECT typename FROM itemtypes))
+	type INT NOT NULL,
+	FOREIGN KEY (type) REFERENCES itemtypes(Type_ID)
 );
 
 CREATE TABLE delivery
@@ -203,13 +196,116 @@ CREATE TABLE invoice_content
 	FOREIGN KEY (invoiceID) REFERENCES invoice(invoiceID)
 );
 
+
+CREATE TABLE user_account
+(
+	userID INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+	staffID INT default '0',
+	upassword VARCHAR(255),
+	FOREIGN KEY (staffID) REFERENCES warehouse_staff(staffID)
+);
+
+
 INSERT INTO warehouse_staff (s_lastname, s_firstname, s_MI, s_address, s_contactno)
 VALUES
 ('Galace', 'Miguel', 'N.', 'Quezon City', '09171234567');
 
 INSERT INTO warehouse_staff (s_firstname) VALUES ('GUIGI!!!');
 
-
-INSERT INTO warehouse_staff (s_lastname, s_firstname, s_MI, s_address, s_contactno)
+INSERT INTO supplier (s_name)
 VALUES
-('a', 'a', 'a', 'a', '0');
+('Namae'),
+('Ming Tze');
+
+INSERT INTO discountrates(Client_ID, Type_ID, Discount)
+VALUES
+(501,3,'0.5'),
+(501,4,'0.2'),
+(502,1,'0.9'),
+(502,2,'0.1');
+
+INSERT INTO client (c_name,discountID)
+VALUES
+('Flowey',1),
+('Jormangund',2);
+
+INSERT INTO agent(alastname,afirstname,aMI,aaddress,acontactno,clientno)
+VALUES
+('Adajar','Amara','E.','Muntinlupa City','09177654321',501),
+('Lacson','Jose Teodoro','<3','Scrub Nation','09369991111',502);
+
+INSERT INTO item (itemname,type)
+VALUES
+('Beryl Gem',1),
+('8 Slot Jute Bag',2),
+('Iron Ore',3),
+('Seasoned Wood Log',4);
+
+INSERT INTO invoice(invoice_date,agentno)
+VALUES
+('2013-12-12',20001),
+('2013-12-14',20002);
+
+INSERT INTO delivery (staffID,supplierno,ddate,dtime)
+VALUES
+(10001,102,'2013-11-29','9:30:00'),
+(10002,101,'2013-11-20','12:00:00');
+
+INSERT INTO delivery_content(dbatchID,itemno,delivery_quantity)
+VALUES
+(1001,1,10),
+(1001,3,11),
+(1001,4,12),
+(1002,2,20);
+
+INSERT INTO item_issuance(staffID,agentno,i_date,i_time)
+VALUES
+(10001,20002,'2013-12-03','1:30:00'),
+(10002,20001,'2013-12-05','2:30:00');
+
+INSERT INTO issuance_content(ibatchID,itemno,issuance_quantity)
+VALUES
+(5001,1,10),
+(5001,3,10),
+(5001,4,10),
+(5002,2,20);
+
+INSERT INTO invoice_content(invoiceID,itemno,invoice_quantity)
+VALUES
+(80001,1,5),
+(80001,3,2),
+(80001,4,1),
+(80002,2,10);
+
+INSERT INTO item_return(ibatchID,r_date)
+VALUES
+(5001,'2013-12-15'),
+(5002,'2013-12-15');
+
+INSERT INTO return_content(rbatchID,itemno,return_quantity)
+VALUES
+(1,1,3),
+(1,3,6),
+(1,4,7),
+(2,1,2),
+(2,3,2),
+(2,4,2),
+(2,2,10);
+
+
+INSERT INTO item_transfer(frombatchID,tobatchID,itdate)
+VALUES
+(5001,5002,'2013-12-04');
+
+INSERT INTO transfer_content(itbatchID,itemno,transfer_quantity)
+VALUES
+(1,1,2),
+(1,3,2),
+(1,4,2);
+
+INSERT INTO itemtypes (typename)
+VALUES
+('Time Pieces'),
+('Digital Cameras and Accessories'),
+('Mobile Phones'),
+('Small Appliances');
