@@ -1,4 +1,1 @@
-INSERT INTO supplier (s_name)
-VALUES
-('Namae'),
-('Ming Tze');
+DROP TABLE warehouse_staff;
