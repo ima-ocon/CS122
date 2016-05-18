@@ -2,10 +2,17 @@
 <body>
 <?php
 
-$servername = "localhost";
+/*$servername = "localhost";
     		$username = "root";
     		$password = "";
-    		$db = "dist";
+    		$db = "dist";*/
+
+        $url = parse_url(getenv("CLEARDB_DATABASE_URL"));
+
+        $servername = $url["host"];
+        $username = $url["user"];
+        $password = $url["pass"];
+        $db = substr($url["path"], 1);
 
 $conn = new PDO("mysql:host=$servername;dbname=$db", $username, $password);
 $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
