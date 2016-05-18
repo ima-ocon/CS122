@@ -35,6 +35,7 @@ DROP TABLE item;
 DROP TABLE invoice;
 DROP TABLE delivery_content;
 DROP TABLE issuance_content;
+DROP TABLE user_account;
 
 DROP TABLE discountrates;
 DROP TABLE delivery;

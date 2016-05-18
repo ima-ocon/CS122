@@ -1,12 +1,12 @@
 <?php
-//$url = parse_url(getenv("CLEARDB_DATABASE_URL"));
+$url = parse_url(getenv("CLEARDB_DATABASE_URL"));
 
-/*$servername = $url["host"];
+$servername = $url["host"];
 $username = $url["user"];
 $password = $url["pass"];
-$db = substr($url["path"], 1);*/
+$db = substr($url["path"], 1);
 
-/*function exec_sql_from_file($path, PDO $pdo) {
+function exec_sql_from_file($path, PDO $pdo) {
     if (! preg_match_all("/('(\\\\.|.)*?'|[^;])+/s", file_get_contents($path), $m))
         return;
 
@@ -16,15 +16,15 @@ $db = substr($url["path"], 1);*/
     }
 }
 
-$servername = "localhost";
+/*$servername = "localhost";
     		$username = "root";
     		$password = "";
-    		$db = "dist";
+    		$db = "dist";*/
 
 $conn = new PDO("mysql:host=$servername;dbname=$db", $username, $password);
 $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
-exec_sql_from_file('tables.sql', $conn)*/
+exec_sql_from_file('tables.sql', $conn);
 ?>
 <!DOCTYPE html>
 <html>

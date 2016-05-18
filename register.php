@@ -2,20 +2,20 @@
 session_start();
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $user_employee_id = $_POST['employee_id'];
+  /*  $user_employee_id = $_POST['employee_id'];
     $user_password = $_POST['password'];
 
 		$servername = "localhost";
 		$username = "root";
 		$password = "";
-		$db = "dist";
+		$db = "dist";*/
 
-/*		$url = parse_url(getenv("CLEARDB_DATABASE_URL"));
+		$url = parse_url(getenv("CLEARDB_DATABASE_URL"));
 
 		$servername = $url["host"];
 		$username = $url["user"];
 		$password = $url["pass"];
-		$db = substr($url["path"], 1);*/
+		$db = substr($url["path"], 1);
 
 			function checkIfValueInColumn($conn, $table, $column, $value) {
 					$sql = 'SELECT * FROM '. $table . ' WHERE ' . $column . ' = ' . $value;

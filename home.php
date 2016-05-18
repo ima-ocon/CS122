@@ -21,10 +21,17 @@ session_start();
 		$user_employee_id = $_SESSION['staffID'];
 		$user_password = $_SESSION['password'];
 
-		$servername = "localhost";
+/*		$servername = "localhost";
 		$username = "root";
 		$password = "";
-		$db = "dist";
+		$db = "dist";*/
+
+		$url = parse_url(getenv("CLEARDB_DATABASE_URL"));
+
+		$servername = $url["host"];
+		$username = $url["user"];
+		$password = $url["pass"];
+		$db = substr($url["path"], 1);
 
 		try {
 			$conn = new PDO("mysql:host=$servername;dbname=$db", $username, $password);

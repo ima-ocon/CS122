@@ -5,10 +5,18 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
   $enteredID = $_POST['enteredID'];
   $enteredPassword = $_POST['enteredPassword'];
 
-	$servername = "localhost";
+/*	$servername = "localhost";
 	$username = "root";
 	$password = "";
-	$db = "dist";
+	$db = "dist";*/
+
+  $url = parse_url(getenv("CLEARDB_DATABASE_URL"));
+
+  $servername = $url["host"];
+  $username = $url["user"];
+  $password = $url["pass"];
+  $db = substr($url["path"], 1);
+
 
 				function checkUserLogin($conn, $enteredID, $enteredPassword) {
 					$sql = 'SELECT * FROM user_account WHERE staffID = ' . $enteredID . ' AND upassword = \'' . $enteredPassword . '\'';

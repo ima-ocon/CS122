@@ -1,7 +1,27 @@
-DROP DATABASE dist;
-CREATE DATABASE dist;
-USE dist;
-DROP TABLE user_account;
+/*
+note:
+/attribute/ <- primary key
+-attribute- <- foreign key
+
+warehouse_staff(/staffID/, s_lastname, s_MI, s_firstname,s_address,s_contactno)
+agent(/agentno/,alastname,aMI,afirstname,aaddress,acontactno,-clientno-)
+client(/clientno/,c_name,-discountID-)
+supplier(/supplierno/,s_name)
+itemtypes(typename)
+item(/itemno/,itemname,price,srp,types)
+invoice(/invoiceID/,-agentno-,invoice_date)
+delivery_content(/-dbatchID-,-itemno-/,delivery_quantity)
+issuance_content(/-ibatchID-,-itemno-/,issuance_quantity)
+discountrates(/discountID/,timep_dr,digicam_dr,phones_dr,appliances_dr)
+delivery(/dbatchID/,-staffID-,-supplierno-,ddate,dtime)
+item_issuance(/ibatchID/,-staffID-,-agentno-,i_date,i_time)
+invoice_content(/-invoiceID-,-itemno-/,invoice_quantity)
+item_transfer(/itbatchID/,-frombatchID-,-tobatchID-,itdate)
+item_return(/rbatchID/,-ibatchID-,r_date)
+transfer_content(/-itbatchID-,-itemno-/,transfer_quantity)
+return_content(/-rbatchID-,-itemno-/,return_quantity)
+*/
+
 DROP TABLE warehouse_staff;
 DROP TABLE agent;
 DROP TABLE client;
@@ -11,6 +31,7 @@ DROP TABLE item;
 DROP TABLE invoice;
 DROP TABLE delivery_content;
 DROP TABLE issuance_content;
+DROP TABLE user_account;
 
 DROP TABLE discountrates;
 DROP TABLE delivery;
@@ -41,22 +62,10 @@ CREATE TABLE supplier
 
 ALTER TABLE supplier AUTO_INCREMENT=101;
 
-CREATE TABLE discountrates
-(
-	Client_ID INT NOT NULL,
-	Type_ID INT NOT NULL,
-	PRIMARY KEY(Client_ID,Type_ID),
-	Discount FLOAT(2),
-	FOREIGN KEY (Client_ID) REFERENCES client(clientno),
-	FOREIGN KEY (Type_ID) REFERENCES itemtypes(Type_ID)
-);
-
 CREATE TABLE client
 (
 	clientno INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-	c_name VARCHAR(255),
-	discountID INT NOT NULL,
-	FOREIGN KEY (discountID) REFERENCES discountrates(discountID)
+	c_name VARCHAR(255)
 );
 
 ALTER TABLE client AUTO_INCREMENT = 501;
@@ -91,7 +100,6 @@ CREATE TABLE itemtypes
 	typename VARCHAR(255) NOT NULL
 );
 
-
 CREATE TABLE item
 (
 	itemno INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
@@ -101,6 +109,18 @@ CREATE TABLE item
 	type INT NOT NULL,
 	FOREIGN KEY (type) REFERENCES itemtypes(Type_ID)
 );
+
+CREATE TABLE discountrates
+(
+	Client_ID INT NOT NULL,
+	Type_ID INT NOT NULL,
+	PRIMARY KEY(Client_ID,Type_ID),
+	Discount FLOAT(2),
+	FOREIGN KEY (Client_ID) REFERENCES client(clientno),
+	FOREIGN KEY (Type_ID) REFERENCES itemtypes(Type_ID)
+);
+
+-----------------------------
 
 CREATE TABLE delivery
 (
@@ -196,7 +216,6 @@ CREATE TABLE invoice_content
 	FOREIGN KEY (invoiceID) REFERENCES invoice(invoiceID)
 );
 
-
 CREATE TABLE user_account
 (
 	userID INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
@@ -217,17 +236,24 @@ VALUES
 ('Namae'),
 ('Ming Tze');
 
+INSERT INTO itemtypes (typename)
+VALUES
+('Time Pieces'),
+('Digital Cameras and Accessories'),
+('Mobile Phones'),
+('Small Appliances');
+
+INSERT INTO client (c_name)
+VALUES
+('Flowey'),
+('Jormangund');
+
 INSERT INTO discountrates(Client_ID, Type_ID, Discount)
 VALUES
 (501,3,'0.5'),
 (501,4,'0.2'),
 (502,1,'0.9'),
 (502,2,'0.1');
-
-INSERT INTO client (c_name,discountID)
-VALUES
-('Flowey',1),
-('Jormangund',2);
 
 INSERT INTO agent(alastname,afirstname,aMI,aaddress,acontactno,clientno)
 VALUES
@@ -270,6 +296,16 @@ VALUES
 (5001,4,10),
 (5002,2,20);
 
+INSERT INTO item_transfer(frombatchID,tobatchID,itdate)
+VALUES
+(5001,5002,'2013-12-04');
+
+INSERT INTO transfer_content(itbatchID,itemno,transfer_quantity)
+VALUES
+(1,1,2),
+(1,3,2),
+(1,4,2);
+
 INSERT INTO invoice_content(invoiceID,itemno,invoice_quantity)
 VALUES
 (80001,1,5),
@@ -291,21 +327,3 @@ VALUES
 (2,3,2),
 (2,4,2),
 (2,2,10);
-
-
-INSERT INTO item_transfer(frombatchID,tobatchID,itdate)
-VALUES
-(5001,5002,'2013-12-04');
-
-INSERT INTO transfer_content(itbatchID,itemno,transfer_quantity)
-VALUES
-(1,1,2),
-(1,3,2),
-(1,4,2);
-
-INSERT INTO itemtypes (typename)
-VALUES
-('Time Pieces'),
-('Digital Cameras and Accessories'),
-('Mobile Phones'),
-('Small Appliances');
